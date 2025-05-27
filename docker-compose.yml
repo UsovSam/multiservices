@@ -1,5 +1,6 @@
 services:
 
+# infrastructure
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -25,10 +26,37 @@ services:
       postgres:
         condition: service_healthy
         restart: true
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+# services
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8000:8080"
+    volumes:
+      - ./user-service/src:/app/src
+      - ./user-service/build.gradle:/app/build.gradle
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
   order-service:
     build: ./order-service
     ports:
-      - "8000:8080"
+      - "8001:8080"
     volumes:
       - ./order-service/src:/app/src
       - ./order-service/build.gradle:/app/build.gradle
@@ -42,10 +70,39 @@ services:
   inventory-service:
     build: ./inventory-service
     ports:
-      - "8001:8080"
+      - "8002:8080"
     volumes:
       - ./inventory-service/src:/app/src
       - ./inventory-service/build.gradle:/app/build.gradle
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+
+  reservation-service:
+    build: ./reservation-service
+    ports:
+      - "8003:8080"
+    volumes:
+      - ./reservation-service/src:/app/src
+      - ./reservation-service/build.gradle:/app/build.gradle
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "8004:8080"
+    volumes:
+      - ./payment-service/src:/app/src
+      - ./payment-service/build.gradle:/app/build.gradle
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
       - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
