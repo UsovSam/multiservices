@@ -1,4 +1,4 @@
-package org.practice.userservice.util;
+package org.practice.security.util;
 
 import lombok.Getter;
 

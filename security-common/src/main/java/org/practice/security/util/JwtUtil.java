@@ -1,8 +1,11 @@
-package org.practice.userservice.util;
+package org.practice.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.practice.security.config.JwtProperties;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,7 +15,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    SecretKey secretKey = Jwts.SIG.HS256.key().build();
+    private final SecretKey secretKey;
+
+    public JwtUtil(JwtProperties jwtProperties) {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public boolean isValid(String authentication) {
         try {

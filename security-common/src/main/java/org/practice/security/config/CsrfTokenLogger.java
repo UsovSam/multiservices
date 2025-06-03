@@ -1,4 +1,4 @@
-package org.practice.userservice.config;
+package org.practice.security.config;
 
 import jakarta.servlet.*;
 import org.slf4j.Logger;

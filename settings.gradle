@@ -6,3 +6,5 @@ include ('inventory-service')
 include ('reservation-service')
 include ('payment-service')
 include ('user-service')
+
+include('security-common')

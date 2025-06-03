@@ -49,6 +49,7 @@ services:
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
       - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+    #      - JWT_SECRET_KEY=ENV=ZGVmYXVsdFNlY3JldEtleVRoYXRTaG91bGRCZU92ZXJyaWRkZW5JblByb2R1Y3Rpb24=
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,13 +57,14 @@ services:
   order-service:
     build: ./order-service
     ports:
-      - "8001:8080"
+      - "8001:8081"
     volumes:
       - ./order-service/src:/app/src
       - ./order-service/build.gradle:/app/build.gradle
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
       - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+    #      - JWT_SECRET_KEY=ENV=ZGVmYXVsdFNlY3JldEtleVRoYXRTaG91bGRCZU92ZXJyaWRkZW5JblByb2R1Y3Rpb24=
     depends_on:
       postgres:
         condition: service_healthy

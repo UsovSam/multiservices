@@ -1,4 +1,5 @@
-package org.practice.userservice.config;
+package org.practice.security.config;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -6,8 +7,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.practice.userservice.util.JwtUtil;
-import org.practice.userservice.util.Params;
+import lombok.NonNull;
+import org.practice.security.util.JwtUtil;
+import org.practice.security.util.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +32,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws IOException, ServletException {
 
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith(Params.BEARER_PREFIX.getValue())) {
@@ -41,16 +43,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = authorization.substring(Params.BEARER_PREFIX.getValue().length());
         logger.info("JWT token: {}", token);
         if (!jwtUtil.isValid(token)) {
+            logger.info("JWT token is not valid");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         Jws<Claims> claimsJws = jwtUtil.parseToken(token);
-        String jsonSubject = claimsJws.getPayload().getSubject();
-        Authentication authentication = new UsernamePasswordAuthenticationToken(jsonSubject, "", new ArrayList<>());
+        String username = String.valueOf(claimsJws.getPayload().get("username"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, "", new ArrayList<>());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        logger.info("JWT token jsonSubject: {}", jsonSubject);
+        logger.info("JWT token username: {}", username);
         filterChain.doFilter(request, response);
     }
 
