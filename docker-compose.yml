@@ -72,7 +72,7 @@ services:
   inventory-service:
     build: ./inventory-service
     ports:
-      - "8002:8080"
+      - "8002:8082"
     volumes:
       - ./inventory-service/src:/app/src
       - ./inventory-service/build.gradle:/app/build.gradle
